@@ -29,24 +29,17 @@ class EmbeddingService:
         # 检查CUDA是否可用，如果不可用则使用CPU
         try:
             import torch
-            if device == "cuda":
-                if torch.cuda.is_available():
-                    gpu_name = torch.cuda.get_device_name(0)
-                    print(f"[OK] CUDA可用，使用GPU加速 (设备: {gpu_name})")
-                else:
-                    print("[WARNING] CUDA不可用，自动切换到CPU")
-                    print("[INFO] 提示：如果您有NVIDIA GPU，请安装CUDA版本的PyTorch：")
-                    print("[INFO]   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118")
-                    device = "cpu"
+            if device == "cuda" and not torch.cuda.is_available():
+                print("[!] CUDA不可用，自动切换到CPU")
+                device = "cpu"
         except ImportError:
-            print("[WARNING] PyTorch未安装，使用CPU模式")
             device = "cpu"
         
         print(f"加载嵌入模型: {model_name} (设备: {device})")
         try:
             self.model = SentenceTransformer(model_name, device=device)
             self.dimension = self.model.get_sentence_embedding_dimension()
-            print(f"[OK] 模型加载成功，向量维度: {self.dimension}")
+            print(f"✅ 模型加载成功，向量维度: {self.dimension}")
         except Exception as e:
             raise Exception(f"加载嵌入模型失败: {str(e)}")
     
@@ -85,31 +78,7 @@ class EmbeddingService:
                 convert_to_numpy=True,
                 show_progress_bar=True
             )
-            # 确保返回的是numpy数组的列表
-            # model.encode返回的是2D numpy数组 (shape: [batch_size, dimension])
-            if isinstance(vectors, np.ndarray):
-                # 如果是2D数组，转换为列表，每个元素是一个1D numpy数组
-                # 统一转换为float32类型以确保类型一致
-                vectors = vectors.astype(np.float32)
-                return [vectors[i] for i in range(len(vectors))]
-            elif isinstance(vectors, list):
-                # 如果已经是列表，确保每个元素是numpy数组
-                return [np.array(v, dtype=np.float32) if not isinstance(v, np.ndarray) else v.astype(np.float32) for v in vectors]
-            else:
-                # 其他情况，尝试转换
-                vectors_array = np.array(vectors, dtype=np.float32)
-                return [vectors_array[i] for i in range(len(vectors_array))]
-        except RuntimeError as e:
-            # 如果CUDA相关错误，尝试切换到CPU
-            if "cuda" in str(e).lower() or "CUDA" in str(e):
-                import torch
-                if torch.cuda.is_available():
-                    # CUDA可用但出错，可能是内存不足等问题
-                    raise Exception(f"CUDA错误: {str(e)}。请尝试减小batch_size或使用CPU模式")
-                else:
-                    # CUDA不可用，应该已经在初始化时切换到CPU了
-                    raise Exception(f"批量编码失败（CUDA不可用）: {str(e)}")
-            raise Exception(f"批量编码失败: {str(e)}")
+            return [vector for vector in vectors]
         except Exception as e:
             raise Exception(f"批量编码失败: {str(e)}")
     

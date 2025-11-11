@@ -37,13 +37,11 @@ CodeRetrievr 是一个基于矢量数据库和知识图谱的智能代码检索�
 
 ## 快速开始
 
-> 📖 **新机器部署？** 请查看 [新机器部署指南](./docs/新机器部署指南.md) 获取完整的部署步骤。
-
 ### 环境要求
 
 - Python 3.9+
 - Docker & Docker Compose（用于本地部署数据库）
-- Node.js 16+（前端开发，可选）
+- Node.js 16+（前端开发）
 
 ### 安装步骤
 
@@ -89,35 +87,27 @@ pip install -r requirements.txt
 
 4. **配置环境变量**
 ```bash
-# 创建.env文件
-# Windows:
-copy env .env
-# macOS/Linux:
-cp env .env
+# 创建.env文件（如果.env.example存在）
+cp .env.example .env
 
 # 编辑 .env 文件，填入API密钥等配置
 # 必需配置：
 # - LLM_API_KEY (DeepSeek API密钥)
 # - GITHUB_TOKEN
-# - NEO4J_PASSWORD (需与docker-compose.yml中的密码一致)
+# - NEO4J_PASSWORD
 ```
 
-5. **启动数据库服务（本地部署）**
+4. **启动数据库服务（本地部署）**
 ```bash
 docker-compose up -d
 ```
 
-6. **验证环境**
-```bash
-python scripts/check_environment.py
-```
-
-7. **启动后端服务**
+5. **启动后端服务**
 ```bash
 python -m uvicorn app.main:app --reload
 ```
 
-8. **启动前端服务（可选）**
+6. **启动前端服务**
 ```bash
 cd frontend
 npm install

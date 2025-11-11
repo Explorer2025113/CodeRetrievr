@@ -44,16 +44,7 @@ def vectorize_and_store(
     """
     embedding_service = get_embedding_service()
     milvus_service = get_milvus_service()
-    
-    # Neo4j服务（可选，连接失败时继续处理）
-    neo4j_service = None
-    try:
-        neo4j_service = get_neo4j_service()
-        print("[OK] Neo4j连接成功")
-    except Exception as e:
-        print(f"[WARNING] Neo4j连接失败，将跳过Neo4j存储: {e}")
-        print("[INFO] 提示：可以继续处理Milvus数据，Neo4j数据稍后可以单独处理")
-        print("[INFO] 解决Neo4j连接问题，请参考: docs/Neo4j连接问题解决方案.md")
+    neo4j_service = get_neo4j_service()
     
     stats = {
         "total": len(code_snippets),
@@ -92,44 +83,41 @@ def vectorize_and_store(
             milvus_ids = milvus_service.insert_code_snippets(processed_snippets, vectors)
             stats["milvus_inserted"] += len(milvus_ids)
             
-            # 插入Neo4j（如果可用）
-            if neo4j_service:
-                print("  插入Neo4j...")
-                for j, snippet in enumerate(processed_snippets):
-                    try:
-                        # 创建代码片段节点
-                        neo4j_service.create_code_snippet_node(
-                            code_id=snippet["code_id"],
-                            name=snippet.get("name", ""),
-                            code_type=snippet.get("type", ""),
-                            language=snippet.get("language", ""),
-                            file_path=snippet.get("file_path", ""),
-                            repo_name=snippet.get("repo_name", ""),
-                            repo_url=snippet.get("repo_url", ""),
-                            milvus_id=milvus_ids[j] if j < len(milvus_ids) else None
-                        )
-                        
-                        # 创建语言关系
-                        if snippet.get("language"):
-                            neo4j_service.create_language_relationship(
-                                snippet["code_id"],
-                                snippet["language"]
-                            )
-                        
-                        # 创建依赖关系
-                        if snippet.get("dependencies"):
-                            neo4j_service.create_dependency_relationships(
-                                snippet["code_id"],
-                                snippet["dependencies"]
-                            )
-                        
-                        stats["neo4j_inserted"] += 1
+            # 插入Neo4j
+            print("  插入Neo4j...")
+            for j, snippet in enumerate(processed_snippets):
+                try:
+                    # 创建代码片段节点
+                    neo4j_service.create_code_snippet_node(
+                        code_id=snippet["code_id"],
+                        name=snippet.get("name", ""),
+                        code_type=snippet.get("type", ""),
+                        language=snippet.get("language", ""),
+                        file_path=snippet.get("file_path", ""),
+                        repo_name=snippet.get("repo_name", ""),
+                        repo_url=snippet.get("repo_url", ""),
+                        milvus_id=milvus_ids[j] if j < len(milvus_ids) else None
+                    )
                     
-                    except Exception as e:
-                        print(f"  [WARNING] 插入Neo4j失败 {snippet.get('name', 'unknown')}: {e}")
-                        stats["errors"] += 1
-            else:
-                print("  跳过Neo4j插入（Neo4j未连接）")
+                    # 创建语言关系
+                    if snippet.get("language"):
+                        neo4j_service.create_language_relationship(
+                            snippet["code_id"],
+                            snippet["language"]
+                        )
+                    
+                    # 创建依赖关系
+                    if snippet.get("dependencies"):
+                        neo4j_service.create_dependency_relationships(
+                            snippet["code_id"],
+                            snippet["dependencies"]
+                        )
+                    
+                    stats["neo4j_inserted"] += 1
+                
+                except Exception as e:
+                    print(f"  ⚠️  插入Neo4j失败 {snippet.get('name', 'unknown')}: {e}")
+                    stats["errors"] += 1
             
             stats["processed"] += len(batch)
             print(f"  ✅ 批次完成: {len(batch)} 个片段")
@@ -179,13 +167,9 @@ def main():
             print(f"  {key}: {value}")
         
         print("\nNeo4j统计:")
-        try:
-            neo4j_service = get_neo4j_service()
-            neo4j_stats = neo4j_service.get_statistics()
-            for key, value in neo4j_stats.items():
-                print(f"  {key}: {value}")
-        except Exception as e:
-            print(f"  Neo4j未连接: {e}")
+        neo4j_stats = get_neo4j_service().get_statistics()
+        for key, value in neo4j_stats.items():
+            print(f"  {key}: {value}")
     
     except Exception as e:
         print(f"处理失败: {e}")

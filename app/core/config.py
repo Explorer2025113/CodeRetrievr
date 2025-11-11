@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     
     # 代码嵌入配置
     EMBEDDING_MODEL: str = "microsoft/codebert-base"  # CodeBERT模型
-    EMBEDDING_DEVICE: str = "cuda"  # cpu 或 cuda（自动检测，如果CUDA不可用会回退到CPU）
+    EMBEDDING_DEVICE: str = "cpu"  # cpu 或 cuda
     
     # Pinecone配置（可选）
     PINECONE_API_KEY: str = ""
@@ -62,9 +62,9 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-3.5-turbo"
     OPENAI_MAX_TOKENS: int = 1000
     
-    # 代码嵌入模型配置（已在上方定义，此处为冗余配置，保留以兼容旧代码）
-    # EMBEDDING_MODEL: str = "microsoft/codebert-base"
-    # EMBEDDING_DEVICE: str = "cuda"
+    # 代码嵌入模型配置
+    EMBEDDING_MODEL: str = "microsoft/codebert-base"
+    EMBEDDING_DEVICE: str = "cpu"
     
     # GitHub配置
     GITHUB_TOKEN: str = ""
