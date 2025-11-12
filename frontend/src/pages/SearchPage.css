@@ -1,0 +1,15 @@
+.search-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-card {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .search-page {
+    max-width: 100%;
+  }
+}
+

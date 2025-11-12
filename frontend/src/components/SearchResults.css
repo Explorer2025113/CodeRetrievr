@@ -1,0 +1,32 @@
+.search-results {
+  margin-top: 24px;
+}
+
+.result-card {
+  margin-bottom: 16px;
+}
+
+.result-header {
+  margin-bottom: 12px;
+}
+
+.result-meta {
+  margin: 12px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.result-dependencies {
+  margin: 12px 0;
+}
+
+.result-related {
+  margin: 12px 0;
+}
+
+@media (max-width: 768px) {
+  .result-card {
+    margin-bottom: 12px;
+  }
+}
+

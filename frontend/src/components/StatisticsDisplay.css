@@ -1,0 +1,24 @@
+.statistics-display {
+  margin-bottom: 24px;
+}
+
+.statistics-display .ant-card {
+  border-radius: 8px;
+}
+
+.statistics-display .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.statistics-display .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .statistics-display .ant-col {
+    margin-bottom: 16px;
+  }
+}
+

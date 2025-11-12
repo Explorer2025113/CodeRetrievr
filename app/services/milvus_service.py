@@ -206,6 +206,90 @@ class MilvusService:
             return stats
         except Exception as e:
             raise Exception(f"获取统计信息失败: {str(e)}")
+    
+    def get_language_stats(self) -> Dict[str, int]:
+        """
+        获取按语言分类的统计
+        注意：由于Milvus查询性能考虑，此方法返回空字典
+        实际统计信息应从Neo4j获取
+        """
+        # Milvus的query操作对大量数据性能较差，统计信息主要从Neo4j获取
+        # 这里返回空字典，让调用方使用Neo4j的统计
+        return {}
+    
+    def get_repo_stats(self) -> Dict[str, int]:
+        """
+        获取按仓库分类的统计
+        注意：由于Milvus查询性能考虑，此方法返回空字典
+        实际统计信息应从Neo4j获取
+        """
+        # Milvus的query操作对大量数据性能较差，统计信息主要从Neo4j获取
+        # 这里返回空字典，让调用方使用Neo4j的统计
+        return {}
+    
+    def get_by_code_id(self, code_id: str) -> Optional[Dict]:
+        """
+        根据code_id获取代码片段
+        
+        Args:
+            code_id: 代码片段ID
+            
+        Returns:
+            代码片段信息，如果不存在返回None
+        """
+        try:
+            results = self.collection.query(
+                expr=f"code_id == '{code_id}'",
+                output_fields=["code_id", "code", "name", "type", "language", "file_path", "repo_name", "repo_url"],
+                limit=1
+            )
+            
+            if results and len(results) > 0:
+                result = results[0]
+                return {
+                    "id": result.get("id"),
+                    "code_id": result.get("code_id"),
+                    "code": result.get("code"),
+                    "name": result.get("name"),
+                    "type": result.get("type"),
+                    "language": result.get("language"),
+                    "file_path": result.get("file_path"),
+                    "repo_name": result.get("repo_name"),
+                    "repo_url": result.get("repo_url"),
+                }
+            return None
+        except Exception as e:
+            print(f"根据code_id查询失败: {str(e)}")
+            return None
+    
+    def delete_by_code_id(self, code_id: str) -> bool:
+        """
+        根据code_id删除代码片段
+        
+        Args:
+            code_id: 代码片段ID
+            
+        Returns:
+            是否成功删除
+        """
+        try:
+            # 先查询获取id
+            results = self.collection.query(
+                expr=f"code_id == '{code_id}'",
+                output_fields=["id"],
+                limit=1
+            )
+            
+            if results and len(results) > 0:
+                entity_id = results[0].get("id")
+                # 删除
+                self.collection.delete(expr=f"id == {entity_id}")
+                self.collection.flush()
+                return True
+            return False
+        except Exception as e:
+            print(f"删除代码片段失败: {str(e)}")
+            return False
 
 
 # 全局实例

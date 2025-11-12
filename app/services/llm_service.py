@@ -80,7 +80,7 @@ class LLMService:
                 messages=[
                     {
                         "role": "system",
-                        "content": "你是一个专业的代码助手，擅长解释代码的使用方法和注意事项。"
+                        "content": "你是一个专业的代码助手，擅长解释代码的使用方法和注意事项。请使用清晰、结构化的 Markdown 格式输出，确保内容易于阅读和理解。"
                     },
                     {
                         "role": "user",
@@ -91,10 +91,50 @@ class LLMService:
                 temperature=0.7
             )
             
-            return response.choices[0].message.content.strip()
+            content = response.choices[0].message.content.strip()
+            # 格式化文本内容
+            return self._format_explanation(content)
         
         except Exception as e:
             raise Exception(f"生成复用说明失败: {str(e)}")
+    
+    def _format_explanation(self, text: str) -> str:
+        """
+        格式化说明文本，确保格式清晰统一
+        
+        Args:
+            text: 原始文本
+            
+        Returns:
+            格式化后的文本
+        """
+        if not text:
+            return text
+        
+        lines = text.split('\n')
+        formatted_lines = []
+        prev_empty = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # 跳过连续的空行，只保留一个
+            if not stripped:
+                if not prev_empty:
+                    formatted_lines.append('')
+                    prev_empty = True
+                continue
+            
+            prev_empty = False
+            formatted_lines.append(line)
+        
+        # 去除开头和结尾的空行
+        while formatted_lines and not formatted_lines[0].strip():
+            formatted_lines.pop(0)
+        while formatted_lines and not formatted_lines[-1].strip():
+            formatted_lines.pop()
+        
+        return '\n'.join(formatted_lines)
     
     def _build_prompt(
         self,
@@ -119,15 +159,40 @@ class LLMService:
         if user_query:
             prompt += f"用户需求：{user_query}\n\n"
         
-        prompt += """请生成包含以下内容的复用说明：
-1. 功能描述：这段代码的主要功能是什么
-2. 使用步骤：如何在自己的项目中使用这段代码
-3. 参数说明：如果有函数/方法，说明各个参数的含义
-4. 返回值说明：如果有返回值，说明返回值的含义
-5. 注意事项：使用时需要注意的问题
-6. 使用示例：提供一个简单的使用示例
+        prompt += """请使用 Markdown 格式生成包含以下内容的复用说明，要求结构清晰、层次分明：
 
-请用中文回答，格式清晰，分点列出。"""
+## 功能描述
+简要说明这段代码的主要功能和用途。
+
+## 使用步骤
+按步骤说明如何在自己的项目中使用这段代码：
+1. 安装依赖（如有）
+2. 导入必要的模块
+3. 复制代码或创建实例
+4. 在项目中使用
+
+## 参数说明
+如果有函数、方法或类，详细说明各个参数的含义、类型和是否必填。
+
+## 返回值说明
+如果有返回值，说明返回值的类型、结构和含义。
+
+## 注意事项
+列出使用时需要注意的重要问题，如：
+- 特殊要求
+- 常见错误
+- 性能考虑
+- 兼容性问题
+
+## 使用示例
+提供一个完整、可直接运行的代码示例，展示如何使用这段代码。
+
+**要求：**
+- 使用中文回答
+- 使用 Markdown 格式（标题使用 ##，列表使用 - 或 1.）
+- 代码示例使用 ``` 代码块包裹
+- 内容准确、简洁、实用
+- 每个部分之间用空行分隔"""
         
         return prompt
 

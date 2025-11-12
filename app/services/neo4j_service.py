@@ -246,6 +246,43 @@ class Neo4jService:
                 stats[key] = result.single()["count"]
             
             return stats
+    
+    def get_language_distribution(self) -> Dict[str, int]:
+        """获取语言分布统计"""
+        with self.driver.session() as session:
+            query = """
+            MATCH (c:CodeSnippet)
+            WHERE c.language IS NOT NULL
+            RETURN c.language as language, count(c) as count
+            ORDER BY count DESC
+            """
+            result = session.run(query)
+            return {record["language"]: record["count"] for record in result}
+    
+    def get_repo_distribution(self, limit: int = 20) -> Dict[str, int]:
+        """获取仓库分布统计"""
+        with self.driver.session() as session:
+            query = """
+            MATCH (c:CodeSnippet)
+            WHERE c.repo_name IS NOT NULL
+            RETURN c.repo_name as repo_name, count(c) as count
+            ORDER BY count DESC
+            LIMIT $limit
+            """
+            result = session.run(query, limit=limit)
+            return {record["repo_name"]: record["count"] for record in result}
+    
+    def get_top_dependencies(self, limit: int = 20) -> Dict[str, int]:
+        """获取热门依赖库统计"""
+        with self.driver.session() as session:
+            query = """
+            MATCH (c:CodeSnippet)-[:DEPENDS_ON]->(l:Library)
+            RETURN l.name as library, count(c) as count
+            ORDER BY count DESC
+            LIMIT $limit
+            """
+            result = session.run(query, limit=limit)
+            return {record["library"]: record["count"] for record in result}
 
 
 # 全局实例

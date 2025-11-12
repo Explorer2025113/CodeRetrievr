@@ -1,14 +1,4 @@
-# 1. 创建conda环境
-conda create -n coderetrievr python=3.9 -y
-
-# 2. 激活环境
-conda activate coderetrievr
-
-# 3. 安装依赖
-pip install -r requirements.txt
-
-# 4. 验证环境
-python scripts/check_environment.py# CodeRetrievr - 基于矢量数据库的代码检索与复用平台
+# CodeRetrievr - 基于矢量数据库的代码检索与复用平台
 
 ## 项目简介
 
@@ -111,8 +101,10 @@ python -m uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
+
+前端将在 http://localhost:3000 启动
 
 ## 项目结构
 
@@ -161,7 +153,7 @@ ls data/code_snippets/
 python scripts/batch_collect.py
 ```
 
-详细说明请参考 [阶段2代码采集指南.md](./docs/阶段2代码采集指南.md)
+详细说明请参考 [新机器部署指南.md](./docs/新机器部署指南.md) 和 [环境配置指南.md](./docs/环境配置指南.md)
 
 ## 贡献指南
 

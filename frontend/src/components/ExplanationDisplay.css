@@ -1,0 +1,119 @@
+.explanation-card {
+  margin-top: 16px;
+  border: 1px solid #d9d9d9;
+}
+
+.explanation-content {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.explanation-content h1,
+.explanation-content h2,
+.explanation-content h3,
+.explanation-content h4,
+.explanation-content h5,
+.explanation-content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.explanation-content h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 8px;
+}
+
+.explanation-content h3 {
+  font-size: 20px;
+}
+
+.explanation-content p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.explanation-content ul,
+.explanation-content ol {
+  margin-bottom: 16px;
+  padding-left: 30px;
+}
+
+.explanation-content li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.explanation-content code {
+  padding: 2px 6px;
+  background: #f4f4f4;
+  border-radius: 3px;
+  font-size: 85%;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.explanation-content pre {
+  padding: 16px;
+  background: #1e1e1e;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.explanation-content pre code {
+  padding: 0;
+  background: transparent;
+  color: #d4d4d4;
+}
+
+.explanation-content blockquote {
+  padding: 0 16px;
+  margin: 16px 0;
+  border-left: 4px solid #dfe2e5;
+  color: #6a737d;
+}
+
+.explanation-content table {
+  border-collapse: collapse;
+  margin: 16px 0;
+  width: 100%;
+}
+
+.explanation-content table th,
+.explanation-content table td {
+  padding: 8px 12px;
+  border: 1px solid #dfe2e5;
+}
+
+.explanation-content table th {
+  background: #f6f8fa;
+  font-weight: 600;
+}
+
+.explanation-content a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.explanation-content a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .explanation-content {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .explanation-content h2 {
+    font-size: 20px;
+  }
+
+  .explanation-content h3 {
+    font-size: 18px;
+  }
+}
+
