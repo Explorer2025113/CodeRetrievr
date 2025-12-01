@@ -126,10 +126,6 @@ CodeRetrievr/
 └── README.md             # 项目说明
 ```
 
-## 开发计划
-
-详细的项目步骤表请参考 [项目步骤表.md](./项目步骤表.md)
-
 ## 快速开始 - 代码采集
 
 ### 采集单个仓库
@@ -152,8 +148,6 @@ ls data/code_snippets/
 ```bash
 python scripts/batch_collect.py
 ```
-
-详细说明请参考 [新机器部署指南.md](./docs/新机器部署指南.md) 和 [环境配置指南.md](./docs/环境配置指南.md)
 
 ## 贡献指南
 

@@ -206,7 +206,7 @@ class MilvusService:
             return stats
         except Exception as e:
             raise Exception(f"获取统计信息失败: {str(e)}")
-    
+
     def get_language_stats(self) -> Dict[str, int]:
         """
         获取按语言分类的统计

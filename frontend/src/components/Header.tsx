@@ -1,10 +1,21 @@
-import { Layout, Typography } from 'antd'
-import { CodeOutlined } from '@ant-design/icons'
+import { Layout, Typography, Select } from 'antd'
+import { CodeOutlined, GlobalOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
+import { useMemo } from 'react'
 
 const { Header: AntHeader } = Layout
 const { Title } = Typography
+const { Option } = Select
 
 const Header = () => {
+  const { t, i18n } = useTranslation()
+
+  const handleLanguageChange = (value: string) => {
+    i18n.changeLanguage(value)
+  }
+
+  const currentLanguage = useMemo(() => i18n.language || 'zh-CN', [i18n.language])
+
   return (
     <AntHeader
       style={{
@@ -17,10 +28,21 @@ const Header = () => {
     >
       <CodeOutlined style={{ fontSize: '24px', marginRight: '12px' }} />
       <Title level={4} style={{ margin: 0, color: '#fff' }}>
-        CodeRetrievr
+        {t('header.title')}
       </Title>
-      <div style={{ marginLeft: 'auto', fontSize: '14px', opacity: 0.8 }}>
-        代码检索与复用平台
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ fontSize: '14px', opacity: 0.8 }}>
+          {t('header.subtitle')}
+        </div>
+        <Select
+          value={currentLanguage}
+          onChange={handleLanguageChange}
+          style={{ width: 120 }}
+          suffixIcon={<GlobalOutlined />}
+        >
+          <Option value="zh-CN">{t('language.zh')}</Option>
+          <Option value="en-US">{t('language.en')}</Option>
+        </Select>
       </div>
     </AntHeader>
   )

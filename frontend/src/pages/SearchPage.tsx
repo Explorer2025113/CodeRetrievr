@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, Input, Button, Select, Space, Spin, message, Checkbox, Tabs } from 'antd'
 import { SearchOutlined, ReloadOutlined, BarChartOutlined, SettingOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { api, SearchResultItem } from '../services/api'
 import SearchResults from '../components/SearchResults'
 import StatisticsDisplay from '../components/StatisticsDisplay'
@@ -12,6 +13,7 @@ const { Option } = Select
 const { TabPane } = Tabs
 
 const SearchPage = () => {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('search')
   const [query, setQuery] = useState('')
   const [language, setLanguage] = useState<string | undefined>(undefined)
@@ -42,7 +44,7 @@ const SearchPage = () => {
 
   const handleSearch = async () => {
     if (!query.trim()) {
-      message.warning('请输入搜索关键词')
+      message.warning(t('search.enterKeywords'))
       return
     }
 
@@ -59,11 +61,11 @@ const SearchPage = () => {
       })
       setResults(response.results)
       if (response.results.length === 0) {
-        message.info('未找到相关代码片段')
+        message.info(t('search.noResults'))
       }
     } catch (error: any) {
       console.error('Search error:', error)
-      const errorMessage = error?.response?.data?.detail || error?.message || '搜索失败，请稍后重试'
+      const errorMessage = error?.response?.data?.detail || error?.message || t('search.searchFailed')
       message.error({
         content: errorMessage,
         duration: 5,
@@ -87,17 +89,17 @@ const SearchPage = () => {
   return (
     <div className="search-page">
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane tab={<span><SearchOutlined />代码检索</span>} key="search">
-          <Card className="search-card" title="代码检索">
+        <TabPane tab={<span><SearchOutlined />{t('tabs.search')}</span>} key="search">
+          <Card className="search-card" title={t('search.title')}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-              搜索查询
+              {t('search.query')}
             </label>
             <TextArea
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="请输入自然语言描述，例如：如何实现快速排序、FastAPI路由处理、Python异步函数等"
+              placeholder={t('search.queryPlaceholder')}
               rows={3}
               onPressEnter={(e) => {
                 if (e.ctrlKey || e.metaKey) {
@@ -110,12 +112,12 @@ const SearchPage = () => {
           <Space wrap>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                编程语言
+                {t('search.language')}
               </label>
               <Select
                 value={language}
                 onChange={setLanguage}
-                placeholder="全部语言"
+                placeholder={t('search.allLanguages')}
                 allowClear
                 style={{ width: 150 }}
               >
@@ -129,12 +131,12 @@ const SearchPage = () => {
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                依赖库
+                {t('search.dependency')}
               </label>
               <Select
                 value={dependency}
                 onChange={setDependency}
-                placeholder="全部依赖库"
+                placeholder={t('search.allDependencies')}
                 allowClear
                 showSearch
                 filterOption={(input, option) =>
@@ -152,12 +154,12 @@ const SearchPage = () => {
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                仓库
+                {t('search.repo')}
               </label>
               <Select
                 value={repoName}
                 onChange={setRepoName}
-                placeholder="全部仓库"
+                placeholder={t('search.allRepos')}
                 allowClear
                 showSearch
                 filterOption={(input, option) =>
@@ -175,45 +177,45 @@ const SearchPage = () => {
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                返回数量
+                {t('search.topK')}
               </label>
               <Select
                 value={topK}
                 onChange={setTopK}
                 style={{ width: 120 }}
               >
-                <Option value={5}>5 条</Option>
-                <Option value={10}>10 条</Option>
-                <Option value={20}>20 条</Option>
-                <Option value={50}>50 条</Option>
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={20}>20</Option>
+                <Option value={50}>50</Option>
               </Select>
             </div>
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                生成说明
+                {t('search.explain')}
               </label>
               <Checkbox
                 checked={explain}
                 onChange={(e) => setExplain(e.target.checked)}
               >
-                生成复用说明
+                {t('search.explainLabel')}
               </Checkbox>
             </div>
 
             {explain && (
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                  说明数量
+                  {t('search.explainCount')}
                 </label>
                 <Select
                   value={explainTopN}
                   onChange={setExplainTopN}
                   style={{ width: 120 }}
                 >
-                  <Option value={1}>1 条</Option>
-                  <Option value={3}>3 条</Option>
-                  <Option value={5}>5 条</Option>
+                  <Option value={1}>1</Option>
+                  <Option value={3}>3</Option>
+                  <Option value={5}>5</Option>
                 </Select>
               </div>
             )}
@@ -227,26 +229,26 @@ const SearchPage = () => {
               loading={loading}
               size="large"
             >
-              搜索
+              {t('search.search')}
             </Button>
             <Button
               icon={<ReloadOutlined />}
               onClick={handleReset}
               size="large"
             >
-              重置
+              {t('search.reset')}
             </Button>
           </Space>
 
               <div style={{ fontSize: '12px', color: '#666' }}>
-                💡 提示：按 Ctrl+Enter (Windows) 或 Cmd+Enter (Mac) 快速搜索
+                {t('search.tip')}
               </div>
             </Space>
           </Card>
 
           {loading && (
             <div style={{ textAlign: 'center', padding: '40px' }}>
-              <Spin size="large" tip="正在搜索..." />
+              <Spin size="large" tip={t('search.searching')} />
             </div>
           )}
 
@@ -254,10 +256,10 @@ const SearchPage = () => {
             <SearchResults results={results} />
           )}
         </TabPane>
-        <TabPane tab={<span><BarChartOutlined />统计信息</span>} key="stats">
+        <TabPane tab={<span><BarChartOutlined />{t('tabs.stats')}</span>} key="stats">
           <StatisticsDisplay />
         </TabPane>
-        <TabPane tab={<span><SettingOutlined />代码管理</span>} key="manage">
+        <TabPane tab={<span><SettingOutlined />{t('tabs.manage')}</span>} key="manage">
           <CodeManagementPage />
         </TabPane>
       </Tabs>

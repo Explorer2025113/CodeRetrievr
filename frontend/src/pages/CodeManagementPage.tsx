@@ -18,6 +18,7 @@ import {
   DeleteOutlined,
   ReloadOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { api, CodeSnippetWithId } from '../services/api'
 import './CodeManagementPage.css'
 
@@ -25,6 +26,7 @@ const { TextArea } = Input
 const { Option } = Select
 
 const CodeManagementPage = () => {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [codes, setCodes] = useState<CodeSnippetWithId[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -41,11 +43,11 @@ const CodeManagementPage = () => {
       const data = await api.getCodeSnippets({ limit: 1000 })
       setCodes(data as CodeSnippetWithId[])
       if (data.length === 0) {
-        message.info('暂无代码片段，请添加代码片段')
+        message.info(t('management.noCodes'))
       }
     } catch (error: any) {
       console.error('Failed to load codes:', error)
-      const errorMessage = error?.response?.data?.detail || error?.message || '加载代码列表失败'
+      const errorMessage = error?.response?.data?.detail || error?.message || t('management.loadFailed')
       message.error({
         content: errorMessage,
         duration: 5,
@@ -76,12 +78,12 @@ const CodeManagementPage = () => {
     try {
       await api.deleteCodeSnippet(codeId)
       message.success({
-        content: '删除成功',
+        content: t('management.deleteSuccess'),
         duration: 2,
       })
       loadCodes()
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.detail || error?.message || '删除失败'
+      const errorMessage = error?.response?.data?.detail || error?.message || t('management.deleteFailed')
       message.error({
         content: errorMessage,
         duration: 5,
@@ -105,14 +107,14 @@ const CodeManagementPage = () => {
         // 更新
         await api.updateCodeSnippet(editingCode.code_id, values)
         message.success({
-          content: '更新成功',
+          content: t('management.updateSuccess'),
           duration: 2,
         })
       } else {
         // 添加
         await api.addCodeSnippet(values)
         message.success({
-          content: '添加成功',
+          content: t('management.addSuccess'),
           duration: 2,
         })
       }
@@ -126,7 +128,7 @@ const CodeManagementPage = () => {
         // 表单验证错误
         return
       }
-      const errorMessage = error?.response?.data?.detail || error?.message || '操作失败'
+      const errorMessage = error?.response?.data?.detail || error?.message || t('management.operationFailed')
       message.error({
         content: errorMessage,
         duration: 5,
@@ -142,7 +144,7 @@ const CodeManagementPage = () => {
 
   const columns = [
     {
-      title: '代码ID',
+      title: t('management.codeId'),
       dataIndex: 'code_id',
       key: 'code_id',
       width: 180,
@@ -153,35 +155,35 @@ const CodeManagementPage = () => {
       ),
     },
     {
-      title: '名称',
+      title: t('management.name'),
       dataIndex: 'name',
       key: 'name',
       width: 150,
       render: (text: string) => text || '-',
     },
     {
-      title: '类型',
+      title: t('management.type'),
       dataIndex: 'type',
       key: 'type',
       width: 100,
       render: (text: string) => text ? <Tag color="geekblue">{text}</Tag> : '-',
     },
     {
-      title: '语言',
+      title: t('management.language'),
       dataIndex: 'language',
       key: 'language',
       width: 100,
       render: (text: string) => text ? <Tag color="green">{text}</Tag> : '-',
     },
     {
-      title: '仓库',
+      title: t('management.repo'),
       dataIndex: 'repo_name',
       key: 'repo_name',
       width: 200,
       render: (text: string) => text || '-',
     },
     {
-      title: '文件路径',
+      title: t('management.filePath'),
       dataIndex: 'file_path',
       key: 'file_path',
       width: 250,
@@ -189,7 +191,7 @@ const CodeManagementPage = () => {
       render: (text: string) => text || '-',
     },
     {
-      title: '依赖库',
+      title: t('management.dependencies'),
       dataIndex: 'dependencies',
       key: 'dependencies',
       render: (deps: string[]) => (
@@ -203,7 +205,7 @@ const CodeManagementPage = () => {
       ),
     },
     {
-      title: '代码预览',
+      title: t('management.codePreview'),
       dataIndex: 'code',
       key: 'code',
       width: 200,
@@ -217,7 +219,7 @@ const CodeManagementPage = () => {
       ),
     },
     {
-      title: '操作',
+      title: t('management.actions'),
       key: 'action',
       width: 150,
       fixed: 'right' as const,
@@ -229,13 +231,13 @@ const CodeManagementPage = () => {
             onClick={() => handleEdit(record)}
             size="small"
           >
-            编辑
+            {t('management.edit')}
           </Button>
           <Popconfirm
-            title="确定要删除这个代码片段吗？"
+            title={t('management.deleteConfirm')}
             onConfirm={() => handleDelete(record.code_id)}
-            okText="确定"
-            cancelText="取消"
+            okText={t('management.confirm')}
+            cancelText={t('management.cancel')}
           >
             <Button
               type="link"
@@ -243,7 +245,7 @@ const CodeManagementPage = () => {
               icon={<DeleteOutlined />}
               size="small"
             >
-              删除
+              {t('management.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -254,21 +256,21 @@ const CodeManagementPage = () => {
   return (
     <div className="code-management-page">
       <Card
-        title="代码管理"
+        title={t('management.title')}
         extra={
           <Space>
             <Button
               icon={<ReloadOutlined />}
               onClick={loadCodes}
             >
-              刷新
+              {t('management.refresh')}
             </Button>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAdd}
             >
-              添加代码
+              {t('management.addCode')}
             </Button>
           </Space>
         }
@@ -278,19 +280,19 @@ const CodeManagementPage = () => {
           dataSource={codes}
           rowKey="code_id"
           loading={loading}
-          pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `共 ${total} 条` }}
+          pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total) => t('management.total', { total }) }}
           scroll={{ x: 1400 }}
         />
       </Card>
 
       <Modal
-        title={editingCode ? '编辑代码片段' : '添加代码片段'}
+        title={editingCode ? t('management.editTitle') : t('management.addTitle')}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={handleCancel}
         width={800}
-        okText="确定"
-        cancelText="取消"
+        okText={t('management.confirm')}
+        cancelText={t('management.cancel')}
       >
         <Form
           form={form}
@@ -302,40 +304,40 @@ const CodeManagementPage = () => {
         >
           <Form.Item
             name="code"
-            label="代码内容"
-            rules={[{ required: true, message: '请输入代码内容' }]}
+            label={t('management.codeContent')}
+            rules={[{ required: true, message: t('management.codePlaceholder') }]}
           >
             <TextArea
               rows={10}
-              placeholder="请输入代码内容"
+              placeholder={t('management.codePlaceholder')}
               style={{ fontFamily: 'monospace' }}
             />
           </Form.Item>
 
           <Form.Item
             name="name"
-            label="名称"
+            label={t('management.name')}
           >
-            <Input placeholder="函数名或类名" />
+            <Input placeholder={t('management.namePlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="type"
-            label="类型"
-            rules={[{ required: true, message: '请选择类型' }]}
+            label={t('management.type')}
+            rules={[{ required: true, message: t('management.typePlaceholder') }]}
           >
             <Select>
-              <Option value="function">函数</Option>
-              <Option value="class">类</Option>
-              <Option value="method">方法</Option>
-              <Option value="module">模块</Option>
+              <Option value="function">{t('management.function')}</Option>
+              <Option value="class">{t('management.class')}</Option>
+              <Option value="method">{t('management.method')}</Option>
+              <Option value="module">{t('management.module')}</Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             name="language"
-            label="编程语言"
-            rules={[{ required: true, message: '请选择编程语言' }]}
+            label={t('management.language')}
+            rules={[{ required: true, message: t('management.languagePlaceholder') }]}
           >
             <Select>
               <Option value="python">Python</Option>
@@ -348,31 +350,31 @@ const CodeManagementPage = () => {
 
           <Form.Item
             name="file_path"
-            label="文件路径"
+            label={t('management.filePath')}
           >
-            <Input placeholder="例如: src/utils/helper.py" />
+            <Input placeholder={t('management.filePathPlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="repo_name"
-            label="仓库名称"
+            label={t('management.repo')}
           >
-            <Input placeholder="例如: username/repo" />
+            <Input placeholder={t('management.repoNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="repo_url"
-            label="仓库URL"
+            label={t('management.repo') + ' URL'}
           >
-            <Input placeholder="例如: https://github.com/username/repo" />
+            <Input placeholder={t('management.repoUrlPlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="dependencies"
-            label="依赖库（逗号分隔）"
-            tooltip="多个依赖库请用逗号分隔，例如: requests, numpy, pandas"
+            label={t('management.dependencies')}
+            tooltip={t('management.dependenciesTooltip')}
           >
-            <Input placeholder="例如: requests, numpy, pandas" />
+            <Input placeholder={t('management.dependenciesPlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>
